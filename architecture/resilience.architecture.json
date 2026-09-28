@@ -1,0 +1,257 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Azure | zonal and regional failure domains",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1390,
+      745
+    ]
+  },
+  "components": [
+    {
+      "id": "frontdoor",
+      "type": "security",
+      "label": "Front Door Premium",
+      "sublabel": "Regional origin groups",
+      "pos": [
+        30,
+        300
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "primaryorigin",
+      "type": "cloud",
+      "label": "Regional service origin",
+      "sublabel": "Zone-redundant ingress",
+      "pos": [
+        360,
+        240
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "zoneawork",
+      "type": "cloud",
+      "label": "Service instances",
+      "sublabel": "Selected compute adapter",
+      "pos": [
+        690,
+        90
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "zoneadb",
+      "type": "database",
+      "label": "PostgreSQL primary",
+      "sublabel": "Flexible Server; active writer",
+      "pos": [
+        1030,
+        90
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "zonebwork",
+      "type": "cloud",
+      "label": "Service instances",
+      "sublabel": "Selected compute adapter",
+      "pos": [
+        690,
+        310
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "zonebdb",
+      "type": "database",
+      "label": "PostgreSQL standby",
+      "sublabel": "Zone-redundant HA",
+      "pos": [
+        1030,
+        310
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "recoveryorigin",
+      "type": "cloud",
+      "label": "Recovery service origin",
+      "sublabel": "Enabled after recovery checks",
+      "pos": [
+        360,
+        570
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "recoverywork",
+      "type": "cloud",
+      "label": "Warm recovery service",
+      "sublabel": "Same verified artifact + config",
+      "pos": [
+        690,
+        570
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "recoverydb",
+      "type": "database",
+      "label": "PostgreSQL geo-replica",
+      "sublabel": "Promote after primary is fenced",
+      "pos": [
+        1030,
+        570
+      ],
+      "size": [
+        220,
+        76
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "frontdoor",
+      "to": "primaryorigin",
+      "label": "Primary origin",
+      "variant": "emphasis"
+    },
+    {
+      "from": "primaryorigin",
+      "to": "zoneawork",
+      "label": "Service routing",
+      "variant": "emphasis"
+    },
+    {
+      "from": "primaryorigin",
+      "to": "zonebwork",
+      "label": "Service routing",
+      "variant": "emphasis",
+      "labelDy": 45
+    },
+    {
+      "from": "zoneawork",
+      "to": "zoneadb",
+      "label": "Database writes"
+    },
+    {
+      "from": "zonebwork",
+      "to": "zoneadb",
+      "label": "Writer endpoint"
+    },
+    {
+      "from": "zoneadb",
+      "to": "zonebdb",
+      "label": "Synchronous HA",
+      "variant": "dashed",
+      "labelDy": 55
+    },
+    {
+      "from": "zoneadb",
+      "to": "recoverydb",
+      "label": "Async WAL",
+      "variant": "dashed",
+      "fromSide": "right",
+      "toSide": "right",
+      "via": [
+        [
+          1350,
+          128
+        ],
+        [
+          1350,
+          608
+        ]
+      ]
+    },
+    {
+      "from": "frontdoor",
+      "to": "recoveryorigin",
+      "label": "After promotion + fencing",
+      "variant": "emphasis"
+    },
+    {
+      "from": "recoveryorigin",
+      "to": "recoverywork",
+      "label": "Recovered traffic",
+      "variant": "emphasis"
+    },
+    {
+      "from": "recoverywork",
+      "to": "recoverydb",
+      "label": "New writer endpoint"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Primary region / production subscription",
+      "wraps": [
+        "primaryorigin",
+        "zoneawork",
+        "zoneadb",
+        "zonebwork",
+        "zonebdb"
+      ],
+      "pad": 65
+    },
+    {
+      "kind": "region",
+      "label": "Availability zone A",
+      "wraps": [
+        "zoneawork",
+        "zoneadb"
+      ],
+      "pad": 25
+    },
+    {
+      "kind": "region",
+      "label": "Availability zone B",
+      "wraps": [
+        "zonebwork",
+        "zonebdb"
+      ],
+      "pad": 25
+    },
+    {
+      "kind": "region",
+      "label": "Recovery region / independent failure domain",
+      "wraps": [
+        "recoveryorigin",
+        "recoverywork",
+        "recoverydb"
+      ],
+      "pad": 30
+    }
+  ],
+  "cards": []
+}

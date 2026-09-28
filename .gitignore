@@ -1,0 +1,22 @@
+# Python and local editor output
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+.DS_Store
+.idea/
+.vscode/
+
+# Local credentials and infrastructure state
+.env
+.env.*
+.secrets/
+*.pem
+*.key
+*.p12
+*.pfx
+*.tfstate
+*.tfstate.*
+
+# Generated distribution archives
+*.zip

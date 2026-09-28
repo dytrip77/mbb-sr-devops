@@ -1,0 +1,26 @@
+# Proposed consumer interface, not an existing runnable library release.
+# The actual catalog/root template must be implemented and compiled in ADO.
+trigger:
+  branches:
+    include: [main]
+
+# For Azure Repos PRs, configure required build validation in branch policies.
+resources:
+  repositories:
+    - repository: pipeline_tools
+      type: git
+      name: Platform/pipeline-tools
+      ref: refs/tags/v1.4.0
+
+extends:
+  template: pipeline/ado/policy/standard.yml@pipeline_tools
+  parameters:
+    service: orders-api
+    build_profile: container-http
+    workload: container-apps
+    validation_profile: api-with-postgresql
+    release_profile: critical-http
+
+# The trusted catalog resolves environments and service connections.
+# No arbitrary scripts or identity overrides are accepted by privileged jobs.
+# A required-template check on protected connections enforces this entry point.

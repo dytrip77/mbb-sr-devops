@@ -1,0 +1,109 @@
+{
+  "cloud": "Microsoft Azure",
+  "repository_reviewed_on": "2026-09-28",
+  "health_gate_tests": {
+    "executed_on": "2026-09-25",
+    "passed": 34,
+    "failed": 0,
+    "source_unchanged_since_test_run": true
+  },
+  "example_source_sha256": {
+    "examples/health_gate.py": "f78ca758e3a011a7c5c31c4fa147dac0bca4f5738104477a789b3c6ace38e06b",
+    "examples/test_health_gate.py": "ab0ef3d5610f26244d132d98507ab378626de92c52f8c563d3f57858246e7873",
+    "examples/azure-pipelines.yml": "c61d7fc085772f4bd87edfdd482cfb2681402a1f9a49ad57683df45b314eb881",
+    "examples/release.yaml": "04e2ad7aaf97ba854bbcd767c802fc405fe252bd61c7e308de0e27016a11556a",
+    "examples/release-contract.yaml": "748844ce1804acbe29a2f437ebce3f3df02d5eea7d66632765516edaa65656c0",
+    "examples/release-health.kql": "ec66e553914afc6d694d6ff6a1a1572223898f23038e51f246b593719e0ef7b7",
+    "examples/storage-security.policy.json": "d1662102e0c1b988da455ffc5d3c589d92328ce76bcbbbcc595cea824de1d488"
+  },
+  "example_syntax": {
+    "checked_on": "2026-09-25",
+    "yaml_documents": 3,
+    "azure_policy_json": 1,
+    "status": "passed",
+    "source_unchanged": true
+  },
+  "diagrams": [
+    {
+      "name": "delivery",
+      "source": "architecture/delivery.architecture.json",
+      "image": "architecture/delivery.png",
+      "source_sha256": "c60241efdce38e28413086f7583f4a362fb14fef930509971efd6d6a22735164",
+      "image_sha256": "d706c1d3ff3b9a0b1b1e2be7a7bc4bfb55759361aa8f5e45539f5bafd8cf5516",
+      "authoring_validation": {
+        "checked_on": "2026-09-25",
+        "showcase_checks_passed": 9,
+        "errors": 0,
+        "warnings": 0,
+        "visual_review": "passed"
+      },
+      "source_and_image_unchanged_since_review": true
+    },
+    {
+      "name": "runtime",
+      "source": "architecture/runtime.architecture.json",
+      "image": "architecture/runtime.png",
+      "source_sha256": "444cf42d9795d118d04503a82c244f7cb6b084e0408bc27f5e19d5bb27d549ec",
+      "image_sha256": "50656f59c4f458ac50334e7f0969d69a5ebc881a5b0d1f1fdb4c732dc128dd06",
+      "authoring_validation": {
+        "checked_on": "2026-09-25",
+        "showcase_checks_passed": 9,
+        "errors": 0,
+        "warnings": 0,
+        "visual_review": "passed"
+      },
+      "source_and_image_unchanged_since_review": true
+    },
+    {
+      "name": "resilience",
+      "source": "architecture/resilience.architecture.json",
+      "image": "architecture/resilience.png",
+      "source_sha256": "0db47016355a730b3e7af9e017cdd8cae640a70dd1d72bd54ff4b391a1908a06",
+      "image_sha256": "f225708fb2edc9d8568cc8acbf73f9dccd9130ea49eacbfdd74c8d34a1819d84",
+      "authoring_validation": {
+        "checked_on": "2026-09-25",
+        "showcase_checks_passed": 9,
+        "errors": 0,
+        "warnings": 0,
+        "visual_review": "passed"
+      },
+      "source_and_image_unchanged_since_review": true
+    }
+  ],
+  "azure_acceptance": "not_run",
+  "public_repository_checks": {
+    "scope": "all retained files in submission directory",
+    "reviewed_on": "2026-09-28",
+    "status": "passed",
+    "file_count": 20,
+    "local_link_count": 28,
+    "personal_path_email_and_key_patterns_found": 0,
+    "symlinks": 0,
+    "images": [
+      {
+        "file": "architecture/delivery.png",
+        "text_or_exif_metadata": false,
+        "width": 2048,
+        "height": 1320
+      },
+      {
+        "file": "architecture/resilience.png",
+        "text_or_exif_metadata": false,
+        "width": 2048,
+        "height": 1320
+      },
+      {
+        "file": "architecture/runtime.png",
+        "text_or_exif_metadata": false,
+        "width": 2048,
+        "height": 1320
+      }
+    ],
+    "secret_scan": {
+      "tool": "Gitleaks",
+      "mode": "directory (default rules, redacted output, decoded content included)",
+      "findings": 0
+    },
+    "diagram_content_review": "passed: scenario service and architecture labels only"
+  }
+}

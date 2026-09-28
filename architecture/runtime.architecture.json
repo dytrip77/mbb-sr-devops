@@ -1,0 +1,249 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Azure | private runtime and automated recovery",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1360,
+      800
+    ]
+  },
+  "components": [
+    {
+      "id": "users",
+      "type": "external",
+      "label": "Customers",
+      "sublabel": "Authenticated HTTPS requests",
+      "pos": [
+        25,
+        230
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "frontdoor",
+      "type": "security",
+      "label": "Front Door Premium",
+      "sublabel": "WAF; private origin routes",
+      "pos": [
+        335,
+        230
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "registry",
+      "type": "database",
+      "label": "Production ACR",
+      "sublabel": "Private endpoint; managed identity",
+      "pos": [
+        335,
+        70
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "aca",
+      "type": "cloud",
+      "label": "Azure Container Apps",
+      "sublabel": "HTTP revisions; managed ingress",
+      "pos": [
+        690,
+        70
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "aks",
+      "type": "cloud",
+      "label": "Azure Kubernetes Service",
+      "sublabel": "Private API + ingress ILB / PLS",
+      "pos": [
+        690,
+        230
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "functions",
+      "type": "cloud",
+      "label": "Azure Functions Premium",
+      "sublabel": "HTTP production + staging slots",
+      "pos": [
+        690,
+        390
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "vault",
+      "type": "security",
+      "label": "Azure Key Vault",
+      "sublabel": "Private endpoint; per-app RBAC",
+      "pos": [
+        1050,
+        70
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "database",
+      "type": "database",
+      "label": "Azure PostgreSQL",
+      "sublabel": "Private endpoint; Entra DB role",
+      "pos": [
+        1050,
+        230
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "monitor",
+      "type": "cloud",
+      "label": "Azure Monitor",
+      "sublabel": "Application Insights + Log Analytics",
+      "pos": [
+        1050,
+        390
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "controller",
+      "type": "backend",
+      "label": "Azure recovery controller",
+      "sublabel": "Function + durable state / lease",
+      "pos": [
+        690,
+        560
+      ],
+      "size": [
+        220,
+        76
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "users",
+      "to": "frontdoor",
+      "label": "TLS 443",
+      "variant": "emphasis"
+    },
+    {
+      "from": "frontdoor",
+      "to": "aca",
+      "label": "Private Link",
+      "variant": "emphasis"
+    },
+    {
+      "from": "frontdoor",
+      "to": "aks",
+      "label": "Private Link / ILB",
+      "variant": "emphasis",
+      "labelDy": 12
+    },
+    {
+      "from": "frontdoor",
+      "to": "functions",
+      "label": "Private Link",
+      "variant": "emphasis"
+    },
+    {
+      "from": "registry",
+      "to": "aca",
+      "label": "Image @digest"
+    },
+    {
+      "from": "aca",
+      "to": "vault",
+      "label": "Identity + HTTPS",
+      "variant": "security"
+    },
+    {
+      "from": "aks",
+      "to": "database",
+      "label": "Token + TLS"
+    },
+    {
+      "from": "functions",
+      "to": "monitor",
+      "label": "Release telemetry"
+    },
+    {
+      "from": "monitor",
+      "to": "controller",
+      "label": "Health decision"
+    },
+    {
+      "from": "controller",
+      "to": "functions",
+      "label": "Recover via adapter"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Primary region",
+      "wraps": [
+        "aca",
+        "aks",
+        "functions",
+        "vault",
+        "database",
+        "monitor",
+        "controller"
+      ],
+      "pad": 55
+    },
+    {
+      "kind": "security-group",
+      "label": "Workload VNet / private origins",
+      "wraps": [
+        "aca",
+        "aks",
+        "functions"
+      ],
+      "pad": 25
+    },
+    {
+      "kind": "security-group",
+      "label": "Data private endpoints",
+      "wraps": [
+        "vault",
+        "database"
+      ],
+      "pad": 25
+    }
+  ],
+  "cards": []
+}

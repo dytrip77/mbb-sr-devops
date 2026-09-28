@@ -1,0 +1,310 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Azure | build, sign and promote",
+    "locale": "en",
+    "quality_profile": "showcase",
+    "viewBox": [
+      1320,
+      660
+    ]
+  },
+  "components": [
+    {
+      "id": "repos",
+      "type": "external",
+      "label": "Azure Repos",
+      "sublabel": "App code + release.yaml",
+      "pos": [
+        25,
+        70
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "build",
+      "type": "backend",
+      "label": "Build + tests",
+      "sublabel": "Isolated unprivileged agent",
+      "pos": [
+        345,
+        70
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "sign",
+      "type": "security",
+      "label": "Separate signing job",
+      "sublabel": "Trusted agent; Notation",
+      "pos": [
+        685,
+        70
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "key",
+      "type": "security",
+      "label": "Azure Key Vault",
+      "sublabel": "Dedicated signing identity",
+      "pos": [
+        1025,
+        70
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "audit",
+      "type": "database",
+      "label": "Immutable Blob Storage",
+      "sublabel": "Audit subscription; receipts",
+      "pos": [
+        35,
+        265
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "nonprod",
+      "type": "cloud",
+      "label": "Nonproduction workloads",
+      "sublabel": "Test + staging + performance",
+      "pos": [
+        345,
+        265
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "candidate",
+      "type": "database",
+      "label": "Candidate ACR",
+      "sublabel": "Signed image / ZIP / SBOM",
+      "pos": [
+        685,
+        265
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "productionacr",
+      "type": "database",
+      "label": "Production ACR",
+      "sublabel": "Verified digest + referrers",
+      "pos": [
+        1025,
+        265
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "entra",
+      "type": "security",
+      "label": "Microsoft Entra ID",
+      "sublabel": "WIF; human MFA + PIM",
+      "pos": [
+        25,
+        460
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "gate",
+      "type": "security",
+      "label": "Protected release pipeline",
+      "sublabel": "Policy approval + service lock",
+      "pos": [
+        345,
+        460
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "adapter",
+      "type": "backend",
+      "label": "Runtime adapter",
+      "sublabel": "Scoped production identity",
+      "pos": [
+        685,
+        460
+      ],
+      "size": [
+        220,
+        76
+      ]
+    },
+    {
+      "id": "workload",
+      "type": "cloud",
+      "label": "Production workloads",
+      "sublabel": "Container Apps / AKS / Functions",
+      "pos": [
+        1025,
+        460
+      ],
+      "size": [
+        220,
+        76
+      ]
+    }
+  ],
+  "connections": [
+    {
+      "from": "repos",
+      "to": "build",
+      "label": "Protected commit"
+    },
+    {
+      "from": "build",
+      "to": "sign",
+      "label": "Build evidence"
+    },
+    {
+      "from": "sign",
+      "to": "key",
+      "label": "Remote signing"
+    },
+    {
+      "from": "sign",
+      "to": "candidate",
+      "label": "Sign + publish",
+      "labelDy": 50
+    },
+    {
+      "from": "candidate",
+      "to": "nonprod",
+      "label": "Deploy same digest"
+    },
+    {
+      "from": "nonprod",
+      "to": "gate",
+      "label": "Validation receipt",
+      "labelDy": 50
+    },
+    {
+      "from": "candidate",
+      "to": "productionacr",
+      "label": "Gated graph copy"
+    },
+    {
+      "from": "gate",
+      "to": "adapter",
+      "label": "Authorize target"
+    },
+    {
+      "from": "adapter",
+      "to": "workload",
+      "label": "Deploy / recover"
+    },
+    {
+      "from": "productionacr",
+      "to": "workload",
+      "label": "Pull digest",
+      "labelDy": 50
+    },
+    {
+      "from": "entra",
+      "to": "gate",
+      "label": "Federated access"
+    },
+    {
+      "from": "nonprod",
+      "to": "audit",
+      "label": "Retain evidence"
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "security-group",
+      "label": "Restricted agent pool",
+      "wraps": [
+        "build"
+      ],
+      "pad": 28
+    },
+    {
+      "kind": "security-group",
+      "label": "Signing boundary",
+      "wraps": [
+        "sign",
+        "key"
+      ],
+      "pad": 28
+    },
+    {
+      "kind": "security-group",
+      "label": "Nonproduction subscription",
+      "wraps": [
+        "nonprod"
+      ],
+      "pad": 28
+    },
+    {
+      "kind": "security-group",
+      "label": "Production subscription",
+      "wraps": [
+        "productionacr",
+        "workload"
+      ],
+      "pad": 28
+    },
+    {
+      "kind": "security-group",
+      "label": "Independent retention",
+      "wraps": [
+        "audit"
+      ],
+      "pad": 28
+    }
+  ],
+  "cards": [
+    {
+      "dot": "violet",
+      "title": "Promotion contract",
+      "items": [
+        "The protected gate authorizes copy and deployment for one manifest.",
+        "Candidate and production ACR hold identical signed artifact graphs."
+      ]
+    },
+    {
+      "dot": "cyan",
+      "title": "Identity and evidence",
+      "items": [
+        "WIF identities separate signing, infrastructure and app deployment.",
+        "Every build, approval and deployment exports an audit receipt."
+      ]
+    }
+  ]
+}

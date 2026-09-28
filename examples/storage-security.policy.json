@@ -1,0 +1,27 @@
+{
+  "properties": {
+    "displayName": "Paved road: require private Storage access and Entra authorization",
+    "description": "Assign to compatible evidence/application data storage. Provision private endpoints and DNS separately; assess Functions content-storage compatibility before assignment.",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "metadata": {
+      "category": "Storage",
+      "version": "2.0.0"
+    },
+    "policyRule": {
+      "if": {
+        "allOf": [
+          { "field": "type", "equals": "Microsoft.Storage/storageAccounts" },
+          {
+            "anyOf": [
+              { "field": "Microsoft.Storage/storageAccounts/allowBlobPublicAccess", "notEquals": false },
+              { "field": "Microsoft.Storage/storageAccounts/publicNetworkAccess", "notEquals": "Disabled" },
+              { "field": "Microsoft.Storage/storageAccounts/allowSharedKeyAccess", "notEquals": false }
+            ]
+          }
+        ]
+      },
+      "then": { "effect": "deny" }
+    }
+  }
+}

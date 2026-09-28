@@ -1,0 +1,19 @@
+# Application-owned input shown in the delivery diagram.
+# Proposed schema: validate against the pinned platform catalog/profile.
+schema_version: 1
+service: orders-api
+owner: orders-team
+workload: container-apps
+release_profile: critical-http
+health:
+  readiness_path: /ready
+  version_path: /version
+  smoke_suite: tests/smoke
+database:
+  domain: orders-db
+  migration_path: migrations
+  change_kind: expand-only
+
+# These paths run only in the unprivileged validation/build context.
+# Privileged jobs consume retained results; they do not run app-owned scripts.
+# Subscription, resource IDs, environment and service connection are catalog-owned.

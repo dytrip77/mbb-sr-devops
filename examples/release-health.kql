@@ -1,0 +1,32 @@
+// Run against workspace-based Application Insights; adapter supplies bindings.
+// Keep critical release request telemetry unsampled. Validate ingestion latency
+// and heartbeat separately; an empty query result is HOLD, never GO.
+let service = "orders-api";
+let candidate = "orders-api-20260925-0042";
+let stable = "orders-api-20260924-0041";
+let window_end = now() - 2m;
+let window_start = window_end - 5m;
+AppRequests
+| where TimeGenerated >= window_start and TimeGenerated < window_end
+| where AppRoleName == service
+| extend release_id = tostring(Properties["release_id"])
+| where release_id in (candidate, stable)
+| where tostring(Properties["traffic_class"]) == "customer"
+| summarize requests = count(),
+            server_errors = countif(ResultCode startswith "5"),
+            p95_ms = percentile(DurationMs, 95),
+            last_request_at = max(TimeGenerated)
+  by release_id
+| extend error_rate = todouble(server_errors) / requests,
+         window_start = window_start,
+         window_end = window_end,
+         window_seconds = 300
+
+// A 200 response with incorrect business behavior needs separate application
+// success metrics and synthetic checks; it is not captured by server_errors.
+// At 100% candidate traffic, use a retained recent stable baseline, not an empty
+// live stable cohort. Publish a separate heartbeat even when traffic is zero.
+
+// The trusted controller supplies stage_started_at from confirmed traffic state,
+// resets it at every step/bake and derives elapsed time. GO requires
+// window_start >= stage_started_at; never shorten the window to hide overlap.

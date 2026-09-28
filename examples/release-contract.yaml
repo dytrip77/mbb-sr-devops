@@ -1,0 +1,36 @@
+# Proposed schema/interface. Digests and IDs below are illustrative placeholders.
+schema_version: 1
+service: orders-api
+release_id: orders-api-20260925-0042
+source:
+  repository: Applications/orders-api
+  commit: '<40-character-commit>'
+template:
+  tag: v1.4.0
+  resolved_commit: '<40-character-template-commit>'
+policy_version: critical-http-v1
+artifact:
+  type: oci-image
+  subject: 'acrordersprod.azurecr.io/orders-api@sha256:<64-hex-digest>'
+  sbom_digest: 'sha256:<64-hex-digest>'
+  provenance_digest: 'sha256:<64-hex-digest>'
+configuration_digest: 'sha256:<64-hex-digest>'
+migration:
+  domain: orders-db
+  bundle_digest: 'sha256:<64-hex-digest>'
+  kind: expand-only
+  compatible_previous_release: orders-api-20260924-0041
+target:
+  environment: prod-orders-weu
+  resource_id: '<catalog-resolved-Azure-resource-ID>'
+checks:
+  test_run_ids: ['<trusted-Azure-Pipelines-test-run-ID>']
+  scan_receipt: '<immutable-evidence-URI>'
+  approval_record: '<protected-resource-approval-ID>'
+recovery:
+  stable_revision: orders-api--r0041
+  max_telemetry_gap_seconds: 300
+  evidence_uri: '<audit-owned-immutable-Blob-URI>'
+
+# The collector signs/retains this envelope only after independently verifying
+# the referenced evidence and its artifact/target/execution binding.
